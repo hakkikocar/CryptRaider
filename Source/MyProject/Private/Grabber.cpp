@@ -3,7 +3,6 @@
 
 #include "Grabber.h"
 #include "DrawDebugHelpers.h"
-#include "Kismet/ImportanceSamplingLibrary.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -19,10 +18,7 @@ UGrabber::UGrabber()
 // Called when the game starts
 void UGrabber::BeginPlay()
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	Super::BeginPlay();	
 }
 
 
@@ -30,13 +26,29 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	UPhysicsHandleComponent* PhysicsHandle =GetPhysicsHandle();
+	if (PhysicsHandle==nullptr)
+	{
+		return;
+	}
+
+	FVector TargetLocation= GetComponentLocation() + GetForwardVector() * HoldDistance;
+	PhysicsHandle->SetTargetLocationAndRotation(TargetLocation ,GetComponentRotation());
 }
 
 void UGrabber::Grab()
 {
+	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
+	if (PhysicsHandle==nullptr)
+	{
+		return;
+	}
+	
 	FVector Start=GetComponentLocation();
 	FVector End=Start+(GetForwardVector()*MaxDistance);
-	DrawDebugLine(GetWorld(),Start,End,FColor::Red,true,-1);
+	DrawDebugLine(GetWorld(),Start,End,FColor::Red);
+	DrawDebugSphere(GetWorld(),End,10,10,FColor::Blue,true,5);
 
 	FCollisionQueryParams Params= FCollisionQueryParams::DefaultQueryParam;
 	FCollisionShape Sphere= FCollisionShape::MakeSphere(GrabRadius);
@@ -50,18 +62,30 @@ void UGrabber::Grab()
 		);
 	if (HasHit)
 	{
-		AActor* HitActor=HitResult.GetActor();
-		FString name=HitActor->GetActorNameOrLabel();
-		UE_LOG(LogTemp,Display,TEXT("hit actor name %s"),*name);
+		
+		DrawDebugSphere(GetWorld(),HitResult.ImpactPoint,10,10,FColor::Red,true,5);
+		PhysicsHandle->GrabComponentAtLocationWithRotation(
+		HitResult.GetComponent(),
+		NAME_None,
+		HitResult.ImpactNormal,
+		GetComponentRotation()
+		);
 	}
-	else
-	{
-		UE_LOG(LogTemp,Display,TEXT("No hiting actor"));
-	}
+	
 }
 
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp,Display,TEXT("release grabber"));
+}
+
+UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
+{
+	UPhysicsHandleComponent* Result =GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (Result==nullptr)
+	{
+		UE_LOG(LogTemp,Error,TEXT("grabber request a UPhysicsHandleComponent"))
+	}
+	return Result;
 }
 
