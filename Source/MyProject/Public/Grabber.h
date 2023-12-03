@@ -38,7 +38,9 @@ private:
 	float GrabRadius = 100;
 
 	UPROPERTY(EditAnywhere)
-	float HoldDistance = 300;
+	float HoldDistance = 500;
 
 	UPhysicsHandleComponent* GetPhysicsHandle() const;
+
+	bool GetGrabbableInReact(FHitResult& OutHitResult) const;
 };
