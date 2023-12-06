@@ -55,11 +55,12 @@ void UGrabber::Grab()
 	{
 		UPrimitiveComponent* HitComponent= HitResult.GetComponent();
 		HitComponent->WakeAllRigidBodies();
+		//HitComponent->WakeRigidBody();
 		DrawDebugSphere(GetWorld(),HitResult.ImpactPoint,10,10,FColor::Red,true,5);
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 		HitComponent,
 		NAME_None,
-		HitResult.ImpactNormal,
+		HitResult.ImpactPoint,
 		GetComponentRotation()
 		);
 	}
@@ -106,6 +107,5 @@ bool UGrabber::GetGrabbableInReact(FHitResult& OutHitResult) const
 		ECC_GameTraceChannel2,
 		Sphere
 		);
-	
 }
 
