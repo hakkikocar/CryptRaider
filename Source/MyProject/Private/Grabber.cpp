@@ -37,7 +37,6 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	{
 		FVector TargetLocation= GetComponentLocation() + GetForwardVector()* HoldDistance;
 		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation ,GetComponentRotation());
-		DrawDebugSphere(GetWorld(),TargetLocation,10,10,FColor::Green,false,5);
 	}
 }
 
@@ -55,8 +54,6 @@ void UGrabber::Grab()
 	{
 		UPrimitiveComponent* HitComponent= HitResult.GetComponent();
 		HitComponent->WakeAllRigidBodies();
-		//HitComponent->WakeRigidBody();
-		DrawDebugSphere(GetWorld(),HitResult.ImpactPoint,10,10,FColor::Red,true,5);
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 		HitComponent,
 		NAME_None,
@@ -94,9 +91,6 @@ bool UGrabber::GetGrabbableInReact(FHitResult& OutHitResult) const
 {
 	FVector Start=GetComponentLocation();
 	FVector End=Start+(GetForwardVector()*MaxDistance);
-	DrawDebugLine(GetWorld(),Start,End,FColor::Red);
-	DrawDebugSphere(GetWorld(),End,10,10,FColor::Blue,true,5);
-
 	FCollisionQueryParams Params= FCollisionQueryParams::DefaultQueryParam;
 	FCollisionShape Sphere= FCollisionShape::MakeSphere(GrabRadius);
 	FHitResult HitResult;
