@@ -3,31 +3,56 @@
 
 #include "TriggerComponent.h"
 
+#include "Materials/MaterialExpressionWhileLoop.h"
+
 UTriggerComponent::UTriggerComponent()
 {
 	PrimaryComponentTick.bCanEverTick=true;
-	UE_LOG(LogTemp,Warning,TEXT("constructer çalıştı"));
 }
 
 //BeginPlayEvent
 void UTriggerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp,Error,TEXT("başarıya oluştu ve begin play çalıştı"));
 }
 
 //Tick Event
 void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType,FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	UE_LOG(LogTemp,Display,TEXT("tick çalışıyor çalıştı"));
-
-
-	TArray<AActor*> Actors;
-	GetOverlappingActors(Actors);
-	if (Actors.Num()>0)
+	AActor* Actor= AcceptableActor();
+	if (Actor!=nullptr)
 	{
-		FString Name=Actors[0]->GetActorNameOrLabel();
-		UE_LOG(LogTemp,Display,TEXT("arraydeki eleman %s"), );
+		UPrimitiveComponent* Component = Cast<UPrimitiveComponent>(Actor->GetRootComponent());
+		if (Component!=nullptr)
+		{
+			Component->SetSimulatePhysics(false);
+		}
+			Actor->AttachToComponent(this,FAttachmentTransformRules::KeepWorldTransform,NAME_None);
+			Mover->SetShouldMove(true);
+		
 	}
+	else
+	{
+		Mover->SetShouldMove(false);
+	}
+}
+
+void UTriggerComponent::SetMover(UMover* NewMover)
+{
+	Mover=NewMover;
+}
+
+AActor* UTriggerComponent::AcceptableActor()
+{
+	TArray<AActor*> Actors;
+ 	GetOverlappingActors(Actors);
+ 		for (AActor* Actor:Actors)
+ 		{
+ 			if (Actor->ActorHasTag(TagName))
+ 			{
+ 				return Actor;
+ 			}
+ 		}
+	return nullptr;
 }

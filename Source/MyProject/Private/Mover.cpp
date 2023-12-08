@@ -19,9 +19,7 @@ UMover::UMover()
 void UMover::BeginPlay()
 {
 	Super::BeginPlay();
-
 	OriginalLocation= GetOwner()->GetActorLocation();
-	
 }
 
 
@@ -38,8 +36,10 @@ if (ShouldMOve==true)
 	FVector NewLocation=FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaTime, Speed);
 	GetOwner()->SetActorLocation(NewLocation);
 	}
+}
 
-		
-	
+void UMover::SetShouldMove(bool NewShouldMove)
+{
+	ShouldMOve=NewShouldMove;
 }
 
