@@ -2,6 +2,8 @@
  This project was prepared with unreal engine 5.
  
  You can download the game or find the gameplay video from here
+
+ Course Link: https://www.udemy.com/share/101XRs3@ZhsBDJZ6OvLd5KpGBsmfuDCBFIlgiT8DKOsUQZFTY3QNxaPifLsN83vrJW-_Oru9/
  
  Game: itch.io page: https://parzival25.itch.io/grab-treasure
  
